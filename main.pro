@@ -71,3 +71,5 @@ sintoma(influenza, perda_paladar, intensidade(leve), prob(0.2), duracao(dias), f
 % --- Hemoptise
 sintoma(tuberculose, hemoptise, intensidade(severa), prob(0.9), duracao(semanas), frequencia(intermitente), critico).
 sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
+
+%test
