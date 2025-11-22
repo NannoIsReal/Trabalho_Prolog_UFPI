@@ -72,3 +72,13 @@ sintoma(influenza, perda_paladar, intensidade(leve), prob(0.2), duracao(dias), f
 sintoma(tuberculose, hemoptise, intensidade(severa), prob(0.9), duracao(semanas), frequencia(intermitente), critico).
 sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
 
+% --- Hierarquia de doencas e seus tipos
+e_uma_doenca(covid19, viral).
+e_uma_doenca(gripe, viral).
+e_uma_doenca(resfriado, viral).
+e_uma_doenca(influenza, viral).
+e_uma_doenca(asma, alergica).
+e_uma_doenca(tuberculose, bacteriana).
+e_uma_doenca(pneumonia, bacteriana).
+e_uma_doenca(doencas_pulmonares_cronicas, cronica).
+e_uma_doenca(rinite, alergica).
