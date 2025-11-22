@@ -82,3 +82,12 @@ e_uma_doenca(tuberculose, bacteriana).
 e_uma_doenca(pneumonia, bacteriana).
 e_uma_doenca(doencas_pulmonares_cronicas, cronica).
 e_uma_doenca(rinite, alergica).
+
+% Fatos de sitomas equivalentes
+subconjunto_sintomas(dispneia, falta_de_ar).
+
+% Regra de sitomas equivalentes
+sintoma_equivalente(S1, S2) :-
+    subconjunto_sintomas(S1, S2).
+sintoma_equivalente(S1, S2) :-
+    subconjunto_sintomas(S2, S1).
