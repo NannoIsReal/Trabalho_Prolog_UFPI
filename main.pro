@@ -83,11 +83,28 @@ e_uma_doenca(pneumonia, bacteriana).
 e_uma_doenca(doencas_pulmonares_cronicas, cronica).
 e_uma_doenca(rinite, alergica).
 
-% Fatos de sitomas equivalentes
+% --- Fatos de sitomas equivalentes
 subconjunto_sintomas(dispneia, falta_de_ar).
 
-% Regra de sitomas equivalentes
+% --- Regra de sitomas equivalentes
 sintoma_equivalente(S1, S2) :-
     subconjunto_sintomas(S1, S2).
 sintoma_equivalente(S1, S2) :-
     subconjunto_sintomas(S2, S1).
+
+% --- Peso por classificacao do sintoma
+peso_classificacao(critico, 2.0).
+peso_classificacao(comum, 1.0).
+peso_classificacao(raro, 0.5).
+
+% --- Multiplicador por intensidade
+multiplicador_intensidade(leve, 0.8).
+multiplicador_intensidade(moderada, 1.0).
+multiplicador_intensidade(alta, 1.1).
+multiplicador_intensidade(severa, 1.2.).
+
+% --- Multiplicador por frequencia
+multiplicador_frequencia(continuo, 1.2).
+multiplicador_frequencia(intermitente, 1.0).
+multiplicador_frequencia(raro, 0.7).
+
