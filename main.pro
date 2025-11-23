@@ -83,10 +83,10 @@ e_uma_doenca(pneumonia, bacteriana).
 e_uma_doenca(doencas_pulmonares_cronicas, cronica).
 e_uma_doenca(rinite, alergica).
 
-% --- Fatos de sitomas equivalentes
+% --- Fatos de sintomas equivalentes
 subconjunto_sintomas(dispneia, falta_de_ar).
 
-% --- Regra de sitomas equivalentes
+% --- Regra de sintomas equivalentes
 sintoma_equivalente(S1, S2) :-
     subconjunto_sintomas(S1, S2).
 sintoma_equivalente(S1, S2) :-
@@ -114,3 +114,12 @@ multiplicador_frequencia(raro, 0.7).
     multiplicador_intensidade(Int, PInt),
     multiplicador_frequencia(Freq, PFreq),
     Score is P * PClass * PInt * PFreq.
+
+% --- Diagnóstico 
+% sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
+diagnosticar_doenca([],_).
+diagnosticar_doenca([Sintoma|Resto], Doenca) :-
+    sintoma(Doenca,Sintoma,_,_,_,_,_),
+    diagnosticar_doenca(Resto, Doenca).
+
+
