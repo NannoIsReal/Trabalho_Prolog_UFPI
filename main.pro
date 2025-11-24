@@ -115,11 +115,20 @@ multiplicador_frequencia(raro, 0.7).
     multiplicador_frequencia(Freq, PFreq),
     Score is P * PClass * PInt * PFreq.
 
-% --- Diagnóstico 
+% --- Calcular score sintoma
+calcular_score_sintoma(Doenca, Sintoma, Score) :-
+    (sintoma(Doenca, Sintoma, intensidade(Int), prob(P), _, frequencia(Freq), Class);   
+    (sintoma_equivalente(Sintoma, Equiv),
+    sintoma(Doenca, Equiv, intensidade(Int), prob(P), _, frequencia(Freq), Class))),
+    calcular_score(P, Class, Int, Freq, Score).
+
+
+% --- Diagnostico
 % sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
 diagnosticar_doenca([],_).
 diagnosticar_doenca([Sintoma|Resto], Doenca) :-
     sintoma(Doenca,Sintoma,_,_,_,_,_),
     diagnosticar_doenca(Resto, Doenca).
+
 
 
