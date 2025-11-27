@@ -45,4 +45,5 @@ diagnosticar_doenca([Sintoma|_], _) :-
     sintoma(Doenca,Equiv,_,_,_,_,_))),
     calcular_score_sintoma(Doenca, Sintoma, Score),
     write('Doenca: '), write(Doenca),
-    write(' - Probabilidade: '), write(Score), nl.
+    write(' - Probabilidade: '), write(Score), nl,
+    fail.
