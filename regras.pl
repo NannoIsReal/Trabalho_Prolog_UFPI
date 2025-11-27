@@ -39,9 +39,10 @@ calcular_score_sintoma(Doenca, Sintoma, Score) :-
 % --- Diagnostico
 % sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
 diagnosticar_doenca([],_).
-diagnosticar_doenca([Sintoma|_], Doenca) :-
+diagnosticar_doenca([Sintoma|_], _) :-
     (sintoma(Doenca,Sintoma,_,_,_,_,_);
     (sintoma_equivalente(Sintoma, Equiv),
     sintoma(Doenca,Equiv,_,_,_,_,_))),
     calcular_score_sintoma(Doenca, Sintoma, Score),
-    write('Probabilidade: '), write(Score), nl.
+    write('Doenca: '), write(Doenca),
+    write(' - Probabilidade: '), write(Score), nl.

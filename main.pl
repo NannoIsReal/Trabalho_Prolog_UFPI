@@ -2,7 +2,5 @@
 :- ['fatos.pl', 'regras.pl'].
 
 % Teste 
-:- initialization(iniciar, main).
-
 iniciar :-
     writeln('Ola mundo').
