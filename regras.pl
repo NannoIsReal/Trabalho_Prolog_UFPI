@@ -26,7 +26,8 @@ multiplicador_frequencia(raro, 0.7).
     peso_classificacao(Class, PClass),
     multiplicador_intensidade(Int, PInt),
     multiplicador_frequencia(Freq, PFreq),
-    Score is (P * PClass * PInt * PFreq).
+    Valor is (P * PClass * PInt * PFreq),
+    Score is round(Valor*100)/100.
 
 % --- Calcular score sintoma
 calcular_score_sintoma(Doenca, Sintoma, Score) :-
