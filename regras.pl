@@ -1,9 +1,8 @@
 % 2) Regras
 
 sintoma_equivalente(S1, S2) :-
-    subconjunto_sintomas(S1, S2).
-sintoma_equivalente(S1, S2) :-
-    subconjunto_sintomas(S2, S1).
+    (subconjunto_sintomas(S1, S2);
+    subconjunto_sintomas(S2, S1)).
 
 % --- Peso por classificacao do sintoma
 peso_classificacao(critico, 2.0).
