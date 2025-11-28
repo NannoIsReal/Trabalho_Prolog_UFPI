@@ -48,3 +48,22 @@ diagnosticar_doenca([Sintoma|_], _) :-
     write('Doenca: '), write(Doenca),
     write(' - Probabilidade: '), write(Score), nl,
     fail.
+
+explicar(_,[],[]).
+explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
+    calcular_score_sintoma(Doenca,Sintomas,Score),
+    
+    (
+        sintoma(Doenca, Sintomas, intensidade(Int), prob(P), _, frequencia(Freq), Class)
+    ;
+        (
+            subconjunto_sintomas(Sintomas, SintomaEquivalente),
+            sintoma(Doenca, SintomaEquivalente, intensidade(Int), prob(P), _, frequencia(Freq), Class)
+        )
+    ),
+
+    Exp = (Sintomas, prob=P, class=Class, int=Int, freq=Freq, score=Score),
+    explicar(Doenca,Resto,RestoExp).
+explicar(Doenca, [Sintoma_Irrelevante | Resto], Resto_Explicacao) :-
+    % Sintoma_Irrelevante é ignorado e a recursão continua
+    explicar(Doenca, Resto, Resto_Explicacao).
