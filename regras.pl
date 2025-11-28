@@ -48,13 +48,14 @@ diagnosticar_doenca([Sintoma|_], _) :-
     write(' - Probabilidade: '), write(Score), nl,
     fail.
 
+%explicar
+
 explicar(_,[],[]).
 explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
     calcular_score_sintoma(Doenca,Sintomas,Score),
     
     (
-        sintoma(Doenca, Sintomas, intensidade(Int), prob(P), _, frequencia(Freq), Class)
-    ;
+        sintoma(Doenca, Sintomas, intensidade(Int), prob(P), _, frequencia(Freq), Class);
         (
             subconjunto_sintomas(Sintomas, SintomaEquivalente),
             sintoma(Doenca, SintomaEquivalente, intensidade(Int), prob(P), _, frequencia(Freq), Class)
@@ -63,6 +64,22 @@ explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
 
     Exp = (Sintomas, prob=P, class=Class, int=Int, freq=Freq, score=Score),
     explicar(Doenca,Resto,RestoExp).
-explicar(Doenca, [Sintoma_Irrelevante | Resto], Resto_Explicacao) :-
-    % Sintoma_Irrelevante é ignorado e a recursão continua
-    explicar(Doenca, Resto, Resto_Explicacao).
+explicar(Doenca, [SintomaIrrelevante | Resto], RestoExplicacao) :-
+    % SintomaIrrelevante é ignorado e a recursão continua
+    explicar(Doenca, Resto, RestoExplicacao).
+
+%quais doenças possuem
+
+quais_doencas_possuem(_,[],[]).
+quais_doencas_possuem(Sintoma,[Doenca|Resto],[Doenca|Resto2]):-
+    (
+        sintoma(Doenca,Sintoma,_,_,_,_,_);
+        (
+            sintoma_equivalente(Sintoma,SintomaEquivalente),
+            sintoma(Doenca,SintomaEquivalente,_,_,_,_,_)
+        )
+    ),
+    quais_doencas_possuem(Sintoma,Resto,Resto2).
+%caso o sintoma nao esteja presente, ignore
+quais_doencas_possuem(Sintoma, [_|Resto], Lista) :-
+    quais_doencas_possuem(Sintoma, Resto, Lista).
