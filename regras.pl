@@ -51,6 +51,12 @@ diagnosticar_doenca([Sintoma|_], _) :-
 %explicar
 
 explicar(_,[],[]).
+
+% caso em que lista final vazia diz nenhum sintoma compativel
+explicar(Doenca, Sintomas, []) :-
+    Sintomas \= [],
+    \+ (explicar(Doenca, Sintomas, [_|_])),
+    writeln('Nenhum sintoma compativel encontrado.').
 explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
     calcular_score_sintoma(Doenca,Sintomas,Score),
     
@@ -64,9 +70,17 @@ explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
 
     Exp = (Sintomas, prob=P, class=Class, int=Int, freq=Freq, score=Score),
     explicar(Doenca,Resto,RestoExp).
-explicar(Doenca, [SintomaIrrelevante | Resto], RestoExplicacao) :-
+explicar(Doenca, [_ | Resto], RestoExplicacao) :-
     % SintomaIrrelevante é ignorado e a recursão continua
     explicar(Doenca, Resto, RestoExplicacao).
+
+
+
+% Caso especial: lista final vazia
+explicar_sem_resultado(Doenca, Sintomas) :-
+    explicar(Doenca, Sintomas, []),
+    writeln('Nenhum sintoma compatível encontrado.').
+
 
 %quais doenças possuem
 

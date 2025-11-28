@@ -2,5 +2,4 @@
 :- ['fatos.pl', 'regras.pl'].
 
 % Teste 
-iniciar :-
-    writeln('Ola mundo').
+:- writeln('Programa iniciado com sucesso.').
