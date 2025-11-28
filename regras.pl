@@ -97,3 +97,10 @@ quais_doencas_possuem(Sintoma,[Doenca|Resto],[Doenca|Resto2]):-
 %caso o sintoma nao esteja presente, ignore
 quais_doencas_possuem(Sintoma, [_|Resto], Lista) :-
     quais_doencas_possuem(Sintoma, Resto, Lista).
+
+% imprimir sintomas de uma doenca
+listar_sintomas(Doenca, Sintoma) :-
+    sintoma(Doenca, Sintoma, _, _, _, _, _),
+    write('Sintoma: '), writeln(Sintoma),
+    fail.
+
