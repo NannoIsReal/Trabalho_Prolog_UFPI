@@ -15,7 +15,7 @@ calcular_score(P, Class, Int, Freq, Score):-
 % --- Calcular score sintoma
 calcular_score_sintoma(Doenca, Sintoma, Score) :-
     (
-        sintoma(Doenca, Sintoma, intensidade(Int), prob(P), _, frequencia(Freq), Class);   
+        sintoma(Doenca, Sintoma, intensidade(Int), prob(P), _, frequencia(Freq), Class);
         (
             sintoma_equivalente(Sintoma, Equiv),
             sintoma(Doenca, Equiv, intensidade(Int), prob(P), _, frequencia(Freq), Class)
@@ -75,12 +75,21 @@ listar_sintomas(Doenca, Sintoma) :-
     write('Sintoma: '), writeln(Sintoma),
     fail.
 
+% imprimir doencas e probabilidades
+imprimir_resultado_diagnostico([]).
+imprimir_resultado_diagnostico([(Doenca, Score) | Resto]) :-
+    write('Doenca: '), write(Doenca),
+    write(' - Probabilidade: '), write(Score), nl,
+    imprimir_resultado_diagnostico(Resto).
 
-diagnosticar_doenca(Sintomas, ResultadoOrdenado) :-
+%diagnosticar doenca
+diagnosticar_doenca(Sintomas) :-
     todas_doencas(ListaDoencas),
     diagnosticar_lista(Sintomas, ListaDoencas, ListaScoresBruta),
     filtrar_scores_zerados(ListaScoresBruta, ListaScores),
-    ordenar_por_score(ListaScores, ResultadoOrdenado).
+    ordenar_por_score(ListaScores, ResultadoOrdenado),
+    imprimir_resultado_diagnostico(ResultadoOrdenado).
+
 
 % Verifica se um elemento ja esta na lista
 ja_existe(_, []) :- fail.
@@ -92,7 +101,7 @@ inverter([], Acc, Acc).
 inverter([H|T], Acc, Res) :- inverter(T, [H|Acc], Res).
 inverter(L, R) :- inverter(L, [], R).
 
-% Pegar lista de doencas 
+% Pegar lista de doencas
 todas_doencas(Lista) :-
     coletar_doencas([], Acumulada),
     inverter(Acumulada, Lista).
@@ -128,7 +137,7 @@ filtrar_scores_zerados([(D,S)|Resto], ListaFiltrada) :-
         filtrar_scores_zerados(Resto, Resto2)
     ).
 
-% Ordenar por score 
+% Ordenar por score
 ordenar_por_score([], []).
 ordenar_por_score([X|Xs], ListaOrdenada) :-
     ordenar_por_score(Xs, ListaParcial),
@@ -140,4 +149,3 @@ inserir_ordenado((D,S), [(D1,S1)|Resto], [(D,S),(D1,S1)|Resto]) :-
     !.
 inserir_ordenado((D,S), [(D1,S1)|Resto], [(D1,S1)|NovoResto]) :-
     inserir_ordenado((D,S), Resto, NovoResto).
-
