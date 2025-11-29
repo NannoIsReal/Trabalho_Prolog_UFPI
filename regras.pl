@@ -99,6 +99,7 @@ scoreTotal(Doenca,[Sintomas|Resto],ScoreTotal):-
     calcular_score_sintoma(Doenca,Sintomas,Score1),
     scoreTotal(Doenca,Resto,Score2),
     ScoreTotal is Score1 + Score2.
+
 %gerar Scores
 gerarScores(_, [], []).
 gerarScores(Sintomas, [Doenca|DoencasResto], [ScoreIncio|ScoresResto]) :-
@@ -106,22 +107,28 @@ gerarScores(Sintomas, [Doenca|DoencasResto], [ScoreIncio|ScoresResto]) :-
     ScoreIncio = (Doenca,Score),
     gerarScores(Sintomas, DoencasResto, ScoresResto).
 
+%maior elemento
+maiorElemento([X], X, []).
+maiorElemento([(Do1,Score1)|Resto], Maior, [(Do1,Score1)|RestoSemMaior]) :-
+    maiorElemento(Resto, MaiorResto, RestoSemMaior),
+    MaiorResto = (_, ScoreResto),
+    ScoreResto > Score1,
+    Maior = MaiorResto.
+maiorElemento([(Do1,Score1)|Resto], (Do1,Score1), [(DoMaior,ScoreMaior)|RestoSemMaior]) :-
+    maiorElemento(Resto, (DoMaior,ScoreMaior), RestoSemMaior),
+    Score1 >= ScoreMaior.
+
+%ordenação
+ordenar([],[]).
+ordenar([Lista|Resto],[ListaOrdenada|RestoOrdenado]):-
+    maiorElemento([Lista|Resto],Maior,RestoSemMaior),
+    ListaOrdenada = Maior,
+    ordenar(RestoSemMaior,RestoOrdenado).
+
 %ranking
 ranking(_, []).
 ranking([Sintomas|SintomasResto], [Ranking|RankingResto]):-
-    (
-        (
-            sintoma(Doenca,Sintomas,_,_,_,_,_),
-            scoreTotal(Doenca,[Sintomas|SintomasResto],Score),
-        );
-        (
-            sintoma_equivalente(Sintomas,SintomaEquivalente),
-            sintoma(Doenca,SintomaEquivalente,_,_,_,_,_),
-            scoreTotal(Doenca,[Sintomas|SintomasResto],Score),
-        )
-        ),
-    Ranking = (Doenca,Score),
-    ranking([Sintomas|SintomasResto],RankingResto).
+    sintoma(Sintomas,D)
 
 
 % listar todas as doenças
