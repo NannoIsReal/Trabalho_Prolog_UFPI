@@ -4,22 +4,6 @@ sintoma_equivalente(S1, S2) :-
     (subconjunto_sintomas(S1, S2);
     subconjunto_sintomas(S2, S1)).
 
-% --- Peso por classificacao do sintoma
-peso_classificacao(critico, 2.0).
-peso_classificacao(comum, 1.0).
-peso_classificacao(raro, 0.5).
-
-% --- Multiplicador por intensidade
-multiplicador_intensidade(leve, 0.8).
-multiplicador_intensidade(moderada, 1.0).
-multiplicador_intensidade(alta, 1.1).
-multiplicador_intensidade(severa, 1.2).
-
-% --- Multiplicador por frequencia
-multiplicador_frequencia(continuo, 1.2).
-multiplicador_frequencia(intermitente, 1.0).
-multiplicador_frequencia(raro, 0.7).
-
 % --- Calculo da probabilidade
  calcular_score(P, Class, Int, Freq, Score):-
     peso_classificacao(Class, PClass),
