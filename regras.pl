@@ -5,7 +5,7 @@ sintoma_equivalente(S1, S2) :-
     subconjunto_sintomas(S2, S1)).
 
 % --- Calculo da probabilidade
- calcular_score(P, Class, Int, Freq, Score):-
+calcular_score(P, Class, Int, Freq, Score):-
     peso_classificacao(Class, PClass),
     multiplicador_intensidade(Int, PInt),
     multiplicador_frequencia(Freq, PFreq),
@@ -14,9 +14,13 @@ sintoma_equivalente(S1, S2) :-
 
 % --- Calcular score sintoma
 calcular_score_sintoma(Doenca, Sintoma, Score) :-
-    (sintoma(Doenca, Sintoma, intensidade(Int), prob(P), _, frequencia(Freq), Class);   
-    (sintoma_equivalente(Sintoma, Equiv),
-    sintoma(Doenca, Equiv, intensidade(Int), prob(P), _, frequencia(Freq), Class))),
+    (
+        sintoma(Doenca, Sintoma, intensidade(Int), prob(P), _, frequencia(Freq), Class);   
+        (
+            sintoma_equivalente(Sintoma, Equiv),
+            sintoma(Doenca, Equiv, intensidade(Int), prob(P), _, frequencia(Freq), Class)
+        )
+    ),
     calcular_score(P, Class, Int, Freq, Score).
 
 
@@ -24,9 +28,13 @@ calcular_score_sintoma(Doenca, Sintoma, Score) :-
 % sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
 diagnosticar_doenca([],_).
 diagnosticar_doenca([Sintoma|_], _) :-
-    (sintoma(Doenca,Sintoma,_,_,_,_,_);
-    (sintoma_equivalente(Sintoma, Equiv),
-    sintoma(Doenca,Equiv,_,_,_,_,_))),
+    (
+        sintoma(Doenca,Sintoma,_,_,_,_,_);
+        (
+            sintoma_equivalente(Sintoma, Equiv),
+            sintoma(Doenca,Equiv,_,_,_,_,_)
+        )
+    ),
     calcular_score_sintoma(Doenca, Sintoma, Score),
     write('Doenca: '), write(Doenca),
     write(' - Probabilidade: '), write(Score), nl,
@@ -43,7 +51,6 @@ explicar(Doenca, Sintomas, []) :-
     writeln('Nenhum sintoma compativel encontrado.').
 explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
     calcular_score_sintoma(Doenca,Sintomas,Score),
-    
     (
         sintoma(Doenca, Sintomas, intensidade(Int), prob(P), _, frequencia(Freq), Class);
         (
@@ -57,9 +64,6 @@ explicar(Doenca,[Sintomas|Resto],[Exp|RestoExp]):-
 explicar(Doenca, [_ | Resto], RestoExplicacao) :-
     % SintomaIrrelevante é ignorado e a recursão continua
     explicar(Doenca, Resto, RestoExplicacao).
-
-
-
 % Caso especial: lista final vazia
 explicar_sem_resultado(Doenca, Sintomas) :-
     explicar(Doenca, Sintomas, []),
@@ -88,3 +92,39 @@ listar_sintomas(Doenca, Sintoma) :-
     write('Sintoma: '), writeln(Sintoma),
     fail.
 
+
+%score total
+scoreTotal(_, [], 0).
+scoreTotal(Doenca,[Sintomas|Resto],ScoreTotal):-
+    calcular_score_sintoma(Doenca,Sintomas,Score1),
+    scoreTotal(Doenca,Resto,Score2),
+    ScoreTotal is Score1 + Score2.
+%gerar Scores
+gerarScores(_, [], []).
+gerarScores(Sintomas, [Doenca|DoencasResto], [ScoreIncio|ScoresResto]) :-
+    scoreTotal(Doenca, Sintomas, Score),
+    ScoreIncio = (Doenca,Score),
+    gerarScores(Sintomas, DoencasResto, ScoresResto).
+
+%ranking
+ranking(_, []).
+ranking([Sintomas|SintomasResto], [Ranking|RankingResto]):-
+    (
+        (
+            sintoma(Doenca,Sintomas,_,_,_,_,_),
+            scoreTotal(Doenca,[Sintomas|SintomasResto],Score),
+        );
+        (
+            sintoma_equivalente(Sintomas,SintomaEquivalente),
+            sintoma(Doenca,SintomaEquivalente,_,_,_,_,_),
+            scoreTotal(Doenca,[Sintomas|SintomasResto],Score),
+        )
+        ),
+    Ranking = (Doenca,Score),
+    ranking([Sintomas|SintomasResto],RankingResto).
+
+
+% listar todas as doenças
+% gerar lista de scores
+% ordenar
+% retornar
