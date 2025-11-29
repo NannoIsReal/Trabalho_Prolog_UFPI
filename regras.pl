@@ -23,23 +23,6 @@ calcular_score_sintoma(Doenca, Sintoma, Score) :-
     ),
     calcular_score(P, Class, Int, Freq, Score).
 
-
-% --- Diagnostico
-% sintoma(pneumonia, hemoptise, intensidade(moderada), prob(0.3), duracao(dias), frequencia(raro), comum).
-diagnosticar_doenca([],_).
-diagnosticar_doenca([Sintoma|_], _) :-
-    (
-        sintoma(Doenca,Sintoma,_,_,_,_,_);
-        (
-            sintoma_equivalente(Sintoma, Equiv),
-            sintoma(Doenca,Equiv,_,_,_,_,_)
-        )
-    ),
-    calcular_score_sintoma(Doenca, Sintoma, Score),
-    write('Doenca: '), write(Doenca),
-    write(' - Probabilidade: '), write(Score), nl,
-    fail.
-
 %explicar
 
 explicar(_,[],[]).
@@ -93,45 +76,68 @@ listar_sintomas(Doenca, Sintoma) :-
     fail.
 
 
-%score total
-scoreTotal(_, [], 0).
-scoreTotal(Doenca,[Sintomas|Resto],ScoreTotal):-
-    calcular_score_sintoma(Doenca,Sintomas,Score1),
-    scoreTotal(Doenca,Resto,Score2),
-    ScoreTotal is Score1 + Score2.
+diagnosticar_doenca(Sintomas, ResultadoOrdenado) :-
+    todas_doencas(ListaDoencas),
+    diagnosticar_lista(Sintomas, ListaDoencas, ListaScoresBruta),
+    filtrar_scores_zerados(ListaScoresBruta, ListaScores),
+    ordenar_por_score(ListaScores, ResultadoOrdenado).
 
-%gerar Scores
-gerarScores(_, [], []).
-gerarScores(Sintomas, [Doenca|DoencasResto], [ScoreIncio|ScoresResto]) :-
-    scoreTotal(Doenca, Sintomas, Score),
-    ScoreIncio = (Doenca,Score),
-    gerarScores(Sintomas, DoencasResto, ScoresResto).
+% Verifica se um elemento ja esta na lista
+ja_existe(_, []) :- fail.
+ja_existe(X, [X|_]) :- !.
+ja_existe(X, [_|Resto]) :- ja_existe(X, Resto).
 
-%maior elemento
-maiorElemento([X], X, []).
-maiorElemento([(Do1,Score1)|Resto], Maior, [(Do1,Score1)|RestoSemMaior]) :-
-    maiorElemento(Resto, MaiorResto, RestoSemMaior),
-    MaiorResto = (_, ScoreResto),
-    ScoreResto > Score1,
-    Maior = MaiorResto.
-maiorElemento([(Do1,Score1)|Resto], (Do1,Score1), [(DoMaior,ScoreMaior)|RestoSemMaior]) :-
-    maiorElemento(Resto, (DoMaior,ScoreMaior), RestoSemMaior),
-    Score1 >= ScoreMaior.
+% Inverter lista
+inverter([], Acc, Acc).
+inverter([H|T], Acc, Res) :- inverter(T, [H|Acc], Res).
+inverter(L, R) :- inverter(L, [], R).
 
-%ordenação
-ordenar([],[]).
-ordenar([Lista|Resto],[ListaOrdenada|RestoOrdenado]):-
-    maiorElemento([Lista|Resto],Maior,RestoSemMaior),
-    ListaOrdenada = Maior,
-    ordenar(RestoSemMaior,RestoOrdenado).
+% Pegar lista de doencas 
+todas_doencas(Lista) :-
+    coletar_doencas([], Acumulada),
+    inverter(Acumulada, Lista).
 
-%ranking
-ranking(_, []).
-ranking([Sintomas|SintomasResto], [Ranking|RankingResto]):-
-    sintoma(Sintomas,D)
+% Acumulador de doencas
+coletar_doencas(Ac, ListaFinal) :-
+    (   sintoma(Doenca, _, _, _, _, _, _),
+        \+ ja_existe(Doenca, Ac),
+        !,
+        coletar_doencas([Doenca|Ac], ListaFinal)
+    ;   ListaFinal = Ac
+    ).
 
+% Diagnosticar lista de doencas
+diagnosticar_lista(_, [], []).
+diagnosticar_lista(Sintomas, [Doenca|Resto], [(Doenca,Score)|RestoScores]) :-
+    calcular_score_doenca(Doenca, Sintomas, Score),
+    diagnosticar_lista(Sintomas, Resto, RestoScores).
 
-% listar todas as doenças
-% gerar lista de scores
-% ordenar
-% retornar
+% Calcular score acumulado de uma doenca
+calcular_score_doenca(_, [], 0).
+calcular_score_doenca(Doenca, [S|Resto], Total) :-
+    (calcular_score_sintoma(Doenca, S, Score) -> true ; Score = 0),
+    calcular_score_doenca(Doenca, Resto, Parcial),
+    Total is Score + Parcial.
+
+% Filtrar doencas com score 0
+filtrar_scores_zerados([], []).
+filtrar_scores_zerados([(D,S)|Resto], ListaFiltrada) :-
+    (   S =:= 0
+    ->  filtrar_scores_zerados(Resto, ListaFiltrada)
+    ;   ListaFiltrada = [(D,S)|Resto2],
+        filtrar_scores_zerados(Resto, Resto2)
+    ).
+
+% Ordenar por score 
+ordenar_por_score([], []).
+ordenar_por_score([X|Xs], ListaOrdenada) :-
+    ordenar_por_score(Xs, ListaParcial),
+    inserir_ordenado(X, ListaParcial, ListaOrdenada).
+
+inserir_ordenado((D,S), [], [(D,S)]).
+inserir_ordenado((D,S), [(D1,S1)|Resto], [(D,S),(D1,S1)|Resto]) :-
+    S >= S1,
+    !.
+inserir_ordenado((D,S), [(D1,S1)|Resto], [(D1,S1)|NovoResto]) :-
+    inserir_ordenado((D,S), Resto, NovoResto).
+
