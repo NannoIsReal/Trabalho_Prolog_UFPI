@@ -150,3 +150,54 @@ inserir_ordenado((D,S), [(D1,S1)|Resto], [(D,S),(D1,S1)|Resto]) :-
     !.
 inserir_ordenado((D,S), [(D1,S1)|Resto], [(D1,S1)|NovoResto]) :-
     inserir_ordenado((D,S), Resto, NovoResto).
+
+
+%consulta interativa
+consulta_interativa :-
+    writeln('--- Diagnostico Interativo ---'),
+    writeln('Responda com sim. ou nao. (use sim. ou nao. com ponto)'),
+    coletar_sintomas([], ListaSintomas),
+    perguntar_sintomas(ListaSintomas, SintomasConfirmados),
+    write('Doencas de acordo com os sintomas confirmados: '), nl,
+    diagnosticar_doenca(SintomasConfirmados).
+
+% Coleta todos os sintomas
+coletar_sintomas(Ac, ListaFinal) :-
+    (   sintoma(_, S, _, _, _, _, _),         
+        nao_ta_na_lista(S, Ac),                  % checa se não está acumulado
+        coletar_sintomas([S|Ac], ListaFinal)  % adiciona e continua
+    ;   ListaFinal = Ac                       % fim da recursao
+    ).
+
+% Checa se ja ta na lista
+nao_ta_na_lista(_, []).
+nao_ta_na_lista(X, [Y|Resto]) :-
+    X \= Y,
+    nao_ta_na_lista(X, Resto).
+
+% Pergunta cada sintoma
+perguntar_sintomas([], []).
+
+perguntar_sintomas([S|Resto], Confirmados) :-
+    format('Voce apresenta ~w? (sim/nao): ', [S]),
+    ler_sim_ou_nao(Resp),
+    (   Resp == sim
+    ->  Confirmados = [S|Tail]
+    ;   Confirmados = Tail
+    ),
+    perguntar_sintomas(Resto, Tail).
+
+% leitor para sim e nao e repete se for diferente
+ler_sim_ou_nao(Resp) :-
+    read(Entrada),                 
+    (   Entrada == sim
+    ->  Resp = sim
+    ;   Entrada == nao
+    ->  Resp = nao
+    ;   write('Entrada invalida! Digite sim. ou nao.'), nl,
+        ler_sim_ou_nao(Resp)
+    ).
+
+
+
+
