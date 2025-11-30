@@ -78,16 +78,18 @@ listar_sintomas(Doenca, Sintoma) :-
 % imprimir doencas e probabilidades
 imprimir_resultado_diagnostico([]).
 imprimir_resultado_diagnostico([(Doenca, Score) | Resto]) :-
-    write('Doenca: '), write(Doenca),
+    write('* '), write(Doenca),
     write(' - Probabilidade: '), write(Score), nl,
     imprimir_resultado_diagnostico(Resto).
 
 %diagnosticar doenca
 diagnosticar_doenca(Sintomas) :-
+    limpar_tela,
     todas_doencas(ListaDoencas),
     diagnosticar_lista(Sintomas, ListaDoencas, ListaScoresBruta),
     filtrar_scores_zerados(ListaScoresBruta, ListaScores),
     ordenar_por_score(ListaScores, ResultadoOrdenado),
+    write('Doencas possiveis: '), nl,
     imprimir_resultado_diagnostico(ResultadoOrdenado).
 
 
@@ -154,6 +156,7 @@ inserir_ordenado((D,S), [(D1,S1)|Resto], [(D1,S1)|NovoResto]) :-
 
 %consulta interativa
 consulta_interativa :-
+    limpar_tela,
     writeln('--- Diagnostico Interativo ---'),
     writeln('Responda com sim. ou nao. (use sim. ou nao. com ponto)'),
     coletar_sintomas([], ListaSintomas),
@@ -198,6 +201,12 @@ ler_sim_ou_nao(Resp) :-
         ler_sim_ou_nao(Resp)
     ).
 
+% limpar terminal
+limpar_tela :-
+    limpar_tela(30). 
 
-
-
+limpar_tela(0).
+limpar_tela(N) :-
+    nl,
+    N1 is N - 1,
+    limpar_tela(N1).
