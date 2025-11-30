@@ -123,10 +123,11 @@ diagnosticar_lista(Sintomas, [Doenca|Resto], [(Doenca,Score)|RestoScores]) :-
 
 % Calcular score acumulado de uma doenca
 calcular_score_doenca(_, [], 0).
-calcular_score_doenca(Doenca, [S|Resto], Total) :-
+calcular_score_doenca(Doenca, [S|Resto], TotalArredondado) :-
     (calcular_score_sintoma(Doenca, S, Score) -> true ; Score = 0),
     calcular_score_doenca(Doenca, Resto, Parcial),
-    Total is Score + Parcial.
+    Soma is Score + Parcial,
+    TotalArredondado is round(Soma*100)/100.
 
 % Filtrar doencas com score 0
 filtrar_scores_zerados([], []).
